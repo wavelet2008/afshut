@@ -116,7 +116,10 @@ class ShuffleNetV2(nn.Module):
         self.stage_repeats = [4, 8, 4]
         # index 0 is invalid and should never be called.
         # only used for indexing convenience.
-        if width_mult == 0.5:
+         if width_mult == 0.25:
+            #self.stage_out_channels = [-1, 12, 24, 48, 96, 96] #175
+            self.stage_out_channels = [-1, 12, 24, 48, 96, 96] #175
+        elif width_mult == 0.5:
             self.stage_out_channels = [-1, 24, 48, 96, 192, 192] #175
         elif width_mult == 1.0:
             self.stage_out_channels = [-1, 24, 116, 232, 464, 1024] # 1024
@@ -154,8 +157,8 @@ class ShuffleNetV2(nn.Module):
         # building last several layers
         self.conv_last = conv_1x1_bn(
             input_channel, self.stage_out_channels[-1])
-        self.globalpool = nn.Sequential(nn.AvgPool2d(int(input_size / 32)))
-
+        #self.globalpool = nn.Sequential(nn.AvgPool2d(int(input_size / 32)))
+        self.globalpool = nn.Sequential(nn.AvgPool2d(int(input_size[0] / 32),int(input_size[1] / 32)))
         # building classifier
         self.classifier = nn.Sequential(
             nn.Linear(self.stage_out_channels[-1], n_class))
